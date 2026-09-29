@@ -9,7 +9,7 @@ protocol TeamsViewModelRepresentable {
     
   var coordinator: TeamsListCoordinator? { get set }
   
-  func fetchTeams()
+  func fetchTeams() async throws -> [TeamViewModel]
 }
 
 class TeamsListViewModel: TeamsViewModelRepresentable {
@@ -23,7 +23,21 @@ class TeamsListViewModel: TeamsViewModelRepresentable {
        self.coordinator = coordinator
      }
     
-    func fetchTeams() {
-        print("### Fetching teams...")
+    func fetchTeams() async throws  -> [TeamViewModel] {
+        let request = FetchTeamsListRequest()
+        let response = try await request.execute()
+        return response.teams.map({ TeamViewModel(from: $0) })
+    }
+}
+
+struct TeamViewModel: Hashable {
+    let title: String
+    let subtitle: String
+}
+
+private extension TeamViewModel {
+    init(from domainModel: Team) {
+        self.title = domainModel.name
+        self.subtitle = "\(domainModel.shortName.uppercased()) • \(domainModel.playerCount) Players"
     }
 }
