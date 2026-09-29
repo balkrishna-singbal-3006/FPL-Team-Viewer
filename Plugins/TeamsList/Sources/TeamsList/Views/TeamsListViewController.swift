@@ -12,6 +12,8 @@ class TeamsListViewController: UIViewController {
     
     // MARK: - UI Elements
     private let tableView = UITableView(frame: .zero, style: .plain)
+    private let loadingIndicator = UIActivityIndicatorView(style: .large)
+    private let refreshControl = UIRefreshControl()
     
     // MARK: - Diffable Data Source
     private enum Section { case main }
@@ -22,19 +24,32 @@ class TeamsListViewController: UIViewController {
         
         // Do any additional setup after loading the view.
         setupTableView()
+        setupLoadingIndicator()
         configureDataSource()
-        fetchTeams()
+        fetchTeams(isRefreshing: false)
     }
     
-    private func fetchTeams() {
+    private func fetchTeams(isRefreshing: Bool) {
         guard let viewModel else {
             return
         }
         
+        if !isRefreshing {
+            loadingIndicator.startAnimating()
+        }
+        
         Task {
             let viewModels = try await viewModel.fetchTeams()
-            updateUI(with: viewModels)
+            await MainActor.run {
+                self.stopAllLoadingIndicators()
+                self.updateUI(with: viewModels)
+            }
         }
+    }
+    
+    private func stopAllLoadingIndicators() {
+        loadingIndicator.stopAnimating()
+        refreshControl.endRefreshing()
     }
     
     // MARK: - Setup
@@ -42,14 +57,30 @@ class TeamsListViewController: UIViewController {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TeamCell")
-        
         tableView.delegate = self
+        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+        tableView.refreshControl = refreshControl
         
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+    }
+    
+    @objc private func handleRefresh() {
+        fetchTeams(isRefreshing: true)
+    }
+    
+    private func setupLoadingIndicator() {
+        view.addSubview(loadingIndicator)
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        loadingIndicator.hidesWhenStopped = true // Automatically hides when stopped
+        
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
     
@@ -91,9 +122,5 @@ extension TeamsListViewController: UITableViewDelegate {
         // 3. Perform your action (e.g., Navigate to a detail view controller)
         print("Tapped on team: \(selectedTeam.title)")
         viewModel?.teamCellTapped(for: selectedTeam)
-        
-        // Example Navigation:
-        // let detailVC = TeamDetailViewController(team: selectedTeam)
-        // navigationController?.pushViewController(detailVC, animated: true)
     }
 }
