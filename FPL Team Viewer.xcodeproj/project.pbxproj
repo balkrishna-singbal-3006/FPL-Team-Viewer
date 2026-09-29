@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		06262550306B8A4D006520F9 /* TeamsList in Frameworks */ = {isa = PBXBuildFile; productRef = 0626254F306B8A4D006520F9 /* TeamsList */; };
+		06262552306B8A4D006520F9 /* TeamSquad in Frameworks */ = {isa = PBXBuildFile; productRef = 06262551306B8A4D006520F9 /* TeamSquad */; };
+		06262554306B8A4D006520F9 /* PluginAPIs in Frameworks */ = {isa = PBXBuildFile; productRef = 06262553306B8A4D006520F9 /* PluginAPIs */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		0626252E306B88C3006520F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +71,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06262552306B8A4D006520F9 /* TeamSquad in Frameworks */,
+				06262550306B8A4D006520F9 /* TeamsList in Frameworks */,
+				06262554306B8A4D006520F9 /* PluginAPIs in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +100,7 @@
 				06262519306B88C0006520F9 /* FPL Team Viewer */,
 				06262530306B88C3006520F9 /* FPL Team ViewerTests */,
 				0626253A306B88C3006520F9 /* FPL Team ViewerUITests */,
+				0626254E306B8A4D006520F9 /* Frameworks */,
 				06262518306B88C0006520F9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -103,6 +113,13 @@
 				06262537306B88C3006520F9 /* FPL Team ViewerUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		0626254E306B8A4D006520F9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,6 +142,9 @@
 			);
 			name = "FPL Team Viewer";
 			packageProductDependencies = (
+				0626254F306B8A4D006520F9 /* TeamsList */,
+				06262551306B8A4D006520F9 /* TeamSquad */,
+				06262553306B8A4D006520F9 /* PluginAPIs */,
 			);
 			productName = "FPL Team Viewer";
 			productReference = 06262517306B88C0006520F9 /* FPL Team Viewer.app */;
@@ -208,6 +228,11 @@
 			);
 			mainGroup = 0626250E306B88C0006520F9;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				0626254B306B89A5006520F9 /* XCLocalSwiftPackageReference "Plugins/TeamsList" */,
+				0626254C306B8A07006520F9 /* XCLocalSwiftPackageReference "Plugins/TeamSquad" */,
+				0626254D306B8A3B006520F9 /* XCLocalSwiftPackageReference "Plugins/PluginAPIs" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 06262518306B88C0006520F9 /* Products */;
 			projectDirPath = "";
@@ -583,6 +608,39 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		0626254B306B89A5006520F9 /* XCLocalSwiftPackageReference "Plugins/TeamsList" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Plugins/TeamsList;
+		};
+		0626254C306B8A07006520F9 /* XCLocalSwiftPackageReference "Plugins/TeamSquad" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Plugins/TeamSquad;
+		};
+		0626254D306B8A3B006520F9 /* XCLocalSwiftPackageReference "Plugins/PluginAPIs" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Plugins/PluginAPIs;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0626254F306B8A4D006520F9 /* TeamsList */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0626254B306B89A5006520F9 /* XCLocalSwiftPackageReference "Plugins/TeamsList" */;
+			productName = TeamsList;
+		};
+		06262551306B8A4D006520F9 /* TeamSquad */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0626254C306B8A07006520F9 /* XCLocalSwiftPackageReference "Plugins/TeamSquad" */;
+			productName = TeamSquad;
+		};
+		06262553306B8A4D006520F9 /* PluginAPIs */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0626254D306B8A3B006520F9 /* XCLocalSwiftPackageReference "Plugins/PluginAPIs" */;
+			productName = PluginAPIs;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0626250F306B88C0006520F9 /* Project object */;
 }
