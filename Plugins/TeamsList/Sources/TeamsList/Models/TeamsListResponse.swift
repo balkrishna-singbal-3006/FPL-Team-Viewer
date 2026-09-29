@@ -83,6 +83,19 @@ struct Player: Decodable {
             case .forward:    return "FWD"
             }
         }
+        
+        var squadPlayerPosition: SquadPlayer.Position {
+            switch self {
+            case .goalkeeper:
+                return .goalkeeper
+            case .defender:
+                return .defender
+            case .midfielder:
+                return .midfielder
+            case .forward:
+                return .forward
+            }
+        }
     }
     
     enum CodingKeys: String, CodingKey {
@@ -103,6 +116,7 @@ extension Player {
                            firstName: firstName,
                            lastName: lastName,
                            totalPoints: totalPoints,
-                           price: price)
+                           price: price,
+                           position: position.squadPlayerPosition)
     }
 }

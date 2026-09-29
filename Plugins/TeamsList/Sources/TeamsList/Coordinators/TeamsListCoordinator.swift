@@ -13,7 +13,8 @@ class TeamsListCoordinator {
     }
     
     enum Action {
-        case showTeamSquad(players: [Player])
+        case showTeamSquad(teamName: String,
+                           players: [Player])
     }
     
     // MARK:- Constants
@@ -52,14 +53,17 @@ class TeamsListCoordinator {
     
     func performAction(_ action: Action) {
         switch action {
-        case .showTeamSquad(let players):
-            navigateToTeamSquad(players: players)
+        case .showTeamSquad(let teamName, let players):
+            navigateToTeamSquad(teamName: teamName,
+                                players: players)
         }
     }
     
-    private func navigateToTeamSquad(players: [Player]) {
+    private func navigateToTeamSquad(teamName: String,
+                                     players: [Player]) {
         let squadPlayers = players.map({ $0.toSquadPlayer() })
-        teamSquadAPI?.showTeamSquadScreen(squadPlayers: squadPlayers,
+        teamSquadAPI?.showTeamSquadScreen(teamName: teamName,
+                                          squadPlayers: squadPlayers,
                                           navigationController: navigationController)
     }
 }

@@ -9,9 +9,11 @@ public class TeamSquadPluginAPI: TeamSquadAPI {
     
     public init() { }
     
-    public func showTeamSquadScreen(squadPlayers: [SquadPlayer],
+    public func showTeamSquadScreen(teamName: String,
+                                    squadPlayers: [SquadPlayer],
                                     navigationController: UINavigationController) {
-        coordinator = TeamSquadCoordinator(squadPlayers: squadPlayers,
+        coordinator = TeamSquadCoordinator(teamName: teamName,
+                                           squadPlayers: squadPlayers,
                                            navigationController: navigationController)
         coordinator?.start()
     }

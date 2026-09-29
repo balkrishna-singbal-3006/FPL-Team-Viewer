@@ -8,16 +8,15 @@ import PluginAPIs
 import UIKit
 
 class TeamSquadCoordinator {
-    private struct NavigationTitles {
-        static let TeamSquadViewControllerTitle = "Squad"
-    }
-    
     // MARK:- Constants
     private let navigationController: UINavigationController
     private let squadPlayers: [SquadPlayer]
+    private let teamName: String
     
-    init(squadPlayers: [SquadPlayer],
+    init(teamName: String,
+         squadPlayers: [SquadPlayer],
          navigationController: UINavigationController) {
+        self.teamName = teamName
         self.squadPlayers = squadPlayers
         self.navigationController = navigationController
     }
@@ -26,13 +25,13 @@ class TeamSquadCoordinator {
      Starts the coordinator.
      */
     func start() {
-        print("squadPlayers = \(squadPlayers)")
         // 1. Create View Controller
         let viewController = TeamSquadViewController()
-        viewController.title = NavigationTitles.TeamSquadViewControllerTitle
+        viewController.title = "\(teamName) Squad"
         
         // 2. Create View Model
-        let viewModel = TeamSquadViewModel(coordinator: self)
+        let viewModel = TeamSquadViewModel(coordinator: self,
+                                           squadPlayers: squadPlayers)
         
         // 3. Assign View Model and Push View Controller
         viewController.viewModel = viewModel
