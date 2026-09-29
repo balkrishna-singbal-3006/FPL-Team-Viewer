@@ -7,9 +7,10 @@
 
 protocol TeamsViewModelRepresentable {
     
-  var coordinator: TeamsListCoordinator? { get set }
-  
-  func fetchTeams() async throws -> [TeamViewModel]
+    var coordinator: TeamsListCoordinator? { get set }
+    
+    func fetchTeams() async throws -> [TeamViewModel]
+    func teamCellTapped()
 }
 
 class TeamsListViewModel: TeamsViewModelRepresentable {
@@ -27,6 +28,10 @@ class TeamsListViewModel: TeamsViewModelRepresentable {
         let request = FetchTeamsListRequest()
         let response = try await request.execute()
         return response.teams.map({ TeamViewModel(from: $0) })
+    }
+    
+    func teamCellTapped() {
+        coordinator?.performAction(.showTeamSquad)
     }
 }
 

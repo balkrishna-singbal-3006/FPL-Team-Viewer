@@ -14,7 +14,8 @@ public class TeamsListPluginAPI: TeamsListAPI {
     
     public func showTeamsListScreen(navigationController: UINavigationController) {
         print("Inside showTeamsListScreen...")
-        coordinator = TeamsListCoordinator(navigationController: navigationController)
+        coordinator = TeamsListCoordinator(navigationController: navigationController,
+                                           teamSquadAPI: self.teamSquadAPI)
         coordinator?.start()
     }
 }

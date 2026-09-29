@@ -13,11 +13,18 @@ let package = Package(
             targets: ["TeamSquad"]
         ),
     ],
+    dependencies: [
+        .package(path: "../PluginAPIs")
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "TeamSquad"
+            name: "TeamSquad",
+            dependencies: [
+                // 2. Add the PluginAPIs library product as a target dependency
+                .product(name: "PluginAPIs", package: "PluginAPIs")
+            ]
         ),
         .testTarget(
             name: "TeamSquadTests",

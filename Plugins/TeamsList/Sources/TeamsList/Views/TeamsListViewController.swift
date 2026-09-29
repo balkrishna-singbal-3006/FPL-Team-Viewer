@@ -43,6 +43,8 @@ class TeamsListViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TeamCell")
         
+        tableView.delegate = self
+        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -74,5 +76,24 @@ class TeamsListViewController: UIViewController {
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModels)
         dataSource.apply(snapshot, animatingDifferences: true)
+    }
+}
+
+extension TeamsListViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // 1. Deselect the row immediately with a smooth fade-out animation
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        // 2. Safely retrieve the view model associated with the tapped row
+        guard let selectedTeam = dataSource.itemIdentifier(for: indexPath) else { return }
+        
+        // 3. Perform your action (e.g., Navigate to a detail view controller)
+        print("Tapped on team: \(selectedTeam.title)")
+        viewModel?.teamCellTapped()
+        
+        // Example Navigation:
+        // let detailVC = TeamDetailViewController(team: selectedTeam)
+        // navigationController?.pushViewController(detailVC, animated: true)
     }
 }
