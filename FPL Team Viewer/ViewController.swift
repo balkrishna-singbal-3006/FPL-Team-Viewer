@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     
     @IBAction func startTeamViewer(_ sender: Any) {
         // TODO: Implement container for storing the APIs.
-        teamsSquadAPI = TeamsSquadPluginAPI()
+        teamsSquadAPI = TeamSquadPluginAPI()
         teamsListAPI = TeamsListPluginAPI(teamSquadAPI: teamsSquadAPI!)
         guard let navigationController else {
             return

@@ -4,7 +4,7 @@
 //
 //  Created by Balkrishna Nitin Singbal on 9/29/26.
 //
-
+import PluginAPIs
 import UIKit
 
 class TeamSquadCoordinator {
@@ -14,8 +14,11 @@ class TeamSquadCoordinator {
     
     // MARK:- Constants
     private let navigationController: UINavigationController
+    private let squadPlayers: [SquadPlayer]
     
-    init(navigationController: UINavigationController) {
+    init(squadPlayers: [SquadPlayer],
+         navigationController: UINavigationController) {
+        self.squadPlayers = squadPlayers
         self.navigationController = navigationController
     }
     
@@ -23,6 +26,7 @@ class TeamSquadCoordinator {
      Starts the coordinator.
      */
     func start() {
+        print("squadPlayers = \(squadPlayers)")
         // 1. Create View Controller
         let viewController = TeamSquadViewController()
         viewController.title = NavigationTitles.TeamSquadViewControllerTitle

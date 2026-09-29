@@ -90,7 +90,7 @@ extension TeamsListViewController: UITableViewDelegate {
         
         // 3. Perform your action (e.g., Navigate to a detail view controller)
         print("Tapped on team: \(selectedTeam.title)")
-        viewModel?.teamCellTapped()
+        viewModel?.teamCellTapped(for: selectedTeam)
         
         // Example Navigation:
         // let detailVC = TeamDetailViewController(team: selectedTeam)
