@@ -11,6 +11,12 @@ protocol TeamSquadViewModelRepresentable {
     var coordinator: TeamSquadCoordinator? { get set }
     var sections: [PositionSection] { get }
     var itemsPerSection: [PositionSection: [PlayerCellViewModel]] { get }
+    func updateSortType(to newSort: SortCriteria)
+}
+
+enum SortCriteria {
+    case totalPoints
+    case price
 }
 
 class TeamSquadViewModel: TeamSquadViewModelRepresentable {
@@ -18,6 +24,7 @@ class TeamSquadViewModel: TeamSquadViewModelRepresentable {
     private let squadPlayers: [SquadPlayer]
     private(set) var sections: [PositionSection] = []
     private(set) var itemsPerSection: [PositionSection: [PlayerCellViewModel]] = [:]
+    private(set) var currentSort: SortCriteria = .totalPoints
     
     /**
       Initializes the TeamsListViewModel.
@@ -29,6 +36,11 @@ class TeamSquadViewModel: TeamSquadViewModelRepresentable {
          self.squadPlayers = squadPlayers
          self.loadPlayers()
      }
+    
+    func updateSortType(to newSort: SortCriteria) {
+        self.currentSort = newSort
+        self.loadPlayers() // Re-process data with new sort parameters
+    }
     
     func loadPlayers() {
         let groupedDictionary = Dictionary(grouping: squadPlayers, by: { $0.position })
@@ -42,8 +54,23 @@ class TeamSquadViewModel: TeamSquadViewModelRepresentable {
             updatedSections.append(section)
             
             if let playersInPosition = groupedDictionary[position] {
+                let sortedPlayers = playersInPosition.sorted { leftPlayer, rightPlayer in
+                    switch currentSort {
+                    case .totalPoints:
+                        if leftPlayer.totalPoints == rightPlayer.totalPoints {
+                            return leftPlayer.price > rightPlayer.price // Tie-breaker: price
+                        }
+                        return leftPlayer.totalPoints > rightPlayer.totalPoints
+                    case .price:
+                        if leftPlayer.price == rightPlayer.price {
+                            return leftPlayer.totalPoints > rightPlayer.totalPoints // Tie-breaker: points
+                        }
+                        return leftPlayer.price > rightPlayer.price
+                    }
+                }
+                
                 // Map Domain arrays directly into UI Cell ViewModels
-                updatedItems[section] = playersInPosition.map { PlayerCellViewModel(from: $0) }
+                updatedItems[section] = sortedPlayers.map { PlayerCellViewModel(from: $0) }
             }
         }
         
@@ -57,13 +84,13 @@ extension SquadPlayer.Position {
     var title: String {
         switch self {
         case .goalkeeper:
-            return "Goalkeeper"
+            return "Goalkeepers"
         case .defender:
-            return "Defender"
+            return "Defenders"
         case .midfielder:
-            return "Midfielder"
+            return "Midfielders"
         case .forward:
-            return "Forward"
+            return "Forwards"
         }
     }
 }

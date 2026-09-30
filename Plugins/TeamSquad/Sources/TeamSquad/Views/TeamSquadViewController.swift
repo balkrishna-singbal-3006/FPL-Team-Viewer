@@ -35,6 +35,7 @@ class TeamSquadViewController: UIViewController {
         // Do any additional setup after loading the view.
         setupTableView()
         configureDataSource()
+        setupNavigationBarSortMenu()
         // Attach the search bar to the navigation bar
         navigationItem.searchController = searchController
         definesPresentationContext = true
@@ -46,6 +47,25 @@ class TeamSquadViewController: UIViewController {
     }
     
     // MARK: - Setup & Bindings
+    private func setupNavigationBarSortMenu() {
+        let sortByPointsAction = UIAction(title: "Total Points", image: UIImage(systemName: "list.number")) { [weak self] _ in
+            self?.performSort(.totalPoints)
+        }
+        let sortByPriceAction = UIAction(title: "Price", image: UIImage(systemName: "sterlingsign")) { [weak self] _ in
+            self?.performSort(.price)
+        }
+        
+        let menu = UIMenu(title: "Sort Players By", children: [sortByPointsAction, sortByPriceAction])
+        let sortButton = UIBarButtonItem(title: "Sort", image: UIImage(systemName: "arrow.up.and.down.text.horizontal"), menu: menu)
+        
+        navigationItem.rightBarButtonItem = sortButton
+    }
+    
+    private func performSort(_ criteria: SortCriteria) {
+        viewModel?.updateSortType(to: criteria)
+        applySnapshot()
+    }
+    
     private func setupTableView() {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
