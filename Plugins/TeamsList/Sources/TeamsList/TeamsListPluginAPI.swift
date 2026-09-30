@@ -6,13 +6,13 @@ import UIKit
 
 public class TeamsListPluginAPI: TeamsListAPI {
     private let teamSquadAPI: TeamSquadAPI
-    private var coordinator: TeamsListCoordinator?
+    private var coordinator: Coordinator?
     
     public init(teamSquadAPI: TeamSquadAPI) {
         self.teamSquadAPI = teamSquadAPI
     }
     
-    public func showTeamsListScreen(navigationController: UINavigationController) {
+    public func loadTeamsListScreen(navigationController: UINavigationController) {
         coordinator = TeamsListCoordinator(navigationController: navigationController,
                                            teamSquadAPI: self.teamSquadAPI)
         coordinator?.start()

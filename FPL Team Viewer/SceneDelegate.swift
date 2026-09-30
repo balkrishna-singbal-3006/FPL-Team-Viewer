@@ -22,11 +22,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
+        // initialise the plugins
         initialisePlugins()
         
         // initialise navigation controller
         let navigationController = UINavigationController()
-        teamsListAPI?.showTeamsListScreen(navigationController: navigationController)
+        teamsListAPI?.loadTeamsListScreen(navigationController: navigationController)
         
         // create a basic UIWindow and activate it
         window = UIWindow(windowScene: windowScene)
@@ -63,6 +64,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
+// MARK: Plugins configuration
 private extension SceneDelegate {
     func initialisePlugins() {
         teamsSquadAPI = TeamSquadPluginAPI()

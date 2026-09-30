@@ -52,8 +52,8 @@ class TeamsListViewModel: TeamsViewModelRepresentable {
     }
     
     func teamCellTapped(for teamViewModel: TeamViewModel) {
-        coordinator?.performAction(.showTeamSquad(teamName: teamViewModel.domainModel.name,
-                                                  players: teamViewModel.domainModel.players))
+        coordinator?.performAction(TeamsListAction.showTeamSquad(teamName: teamViewModel.domainModel.name,
+                                                                 players: teamViewModel.domainModel.players))
     }
 }
 

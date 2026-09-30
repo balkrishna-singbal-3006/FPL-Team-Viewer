@@ -8,5 +8,5 @@
 import UIKit
 
 public protocol TeamsListAPI {
-    func showTeamsListScreen(navigationController: UINavigationController)
+    func loadTeamsListScreen(navigationController: UINavigationController)
 }

@@ -7,23 +7,44 @@
 import PluginAPIs
 import UIKit
 
-class TeamsListCoordinator {
+// ---------- To Move ------------//
+protocol Coordinator {
+    var navigationController: UINavigationController { get }
+    func start()
+    func popBack()
+    func performAction(_ action: Actionable)
+}
+
+extension Coordinator {
+    /**
+     Pops the view controller from the navigation stack.
+     */
+    func popBack() {
+        self.navigationController.popViewController(animated: true)
+    }
+}
+
+protocol Actionable { }
+
+// ---------- To Move ------------//
+
+enum TeamsListAction: Actionable {
+    case showTeamSquad(teamName: String,
+                       players: [Player])
+}
+
+class TeamsListCoordinator: Coordinator {
     private struct NavigationTitles {
         static let TeamsListViewControllerTitle = "Teams List"
     }
     
-    enum Action {
-        case showTeamSquad(teamName: String,
-                           players: [Player])
-    }
-    
     // MARK:- Constants
-    private let navigationController: UINavigationController
-    private let teamSquadAPI: TeamSquadAPI?
+    let navigationController: UINavigationController
+    private let teamSquadAPI: TeamSquadAPI
     
     // MARK:- Initializer
     init(navigationController: UINavigationController,
-         teamSquadAPI: TeamSquadAPI?) {
+         teamSquadAPI: TeamSquadAPI) {
         self.navigationController = navigationController
         self.teamSquadAPI = teamSquadAPI
     }
@@ -44,15 +65,12 @@ class TeamsListCoordinator {
         self.navigationController.pushViewController(viewController, animated: true)
     }
     
-    /**
-     Pops the view controller from the navigation stack.
-     */
-    func popBack() {
-        self.navigationController.popViewController(animated: true)
-    }
-    
-    func performAction(_ action: Action) {
-        switch action {
+    func performAction(_ action: Actionable) {
+        guard let teamsListAction = action as? TeamsListAction else {
+            return
+        }
+        
+        switch teamsListAction {
         case .showTeamSquad(let teamName, let players):
             navigateToTeamSquad(teamName: teamName,
                                 players: players)
@@ -62,7 +80,7 @@ class TeamsListCoordinator {
     private func navigateToTeamSquad(teamName: String,
                                      players: [Player]) {
         let squadPlayers = players.map({ $0.toSquadPlayer() })
-        teamSquadAPI?.showTeamSquadScreen(teamName: teamName,
+        teamSquadAPI.showTeamSquadScreen(teamName: teamName,
                                           squadPlayers: squadPlayers,
                                           navigationController: navigationController)
     }

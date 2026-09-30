@@ -73,29 +73,6 @@ struct Player: Codable {
         case defender = 2
         case midfielder = 3
         case forward = 4
-        
-        // Convenience computed property for UI display labels
-        var shortName: String {
-            switch self {
-            case .goalkeeper: return "GKP"
-            case .defender:   return "DEF"
-            case .midfielder: return "MID"
-            case .forward:    return "FWD"
-            }
-        }
-        
-        var squadPlayerPosition: SquadPlayer.Position {
-            switch self {
-            case .goalkeeper:
-                return .goalkeeper
-            case .defender:
-                return .defender
-            case .midfielder:
-                return .midfielder
-            case .forward:
-                return .forward
-            }
-        }
     }
     
     enum CodingKeys: String, CodingKey {
@@ -118,5 +95,20 @@ extension Player {
                            totalPoints: totalPoints,
                            price: price,
                            position: position.squadPlayerPosition)
+    }
+}
+
+extension Player.Position {
+    var squadPlayerPosition: SquadPlayer.Position {
+        switch self {
+        case .goalkeeper:
+            return .goalkeeper
+        case .defender:
+            return .defender
+        case .midfielder:
+            return .midfielder
+        case .forward:
+            return .forward
+        }
     }
 }
