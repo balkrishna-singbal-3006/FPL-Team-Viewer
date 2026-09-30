@@ -15,20 +15,40 @@ protocol TeamsViewModelRepresentable {
 class TeamsListViewModel: TeamsViewModelRepresentable {
     weak var coordinator: TeamsListCoordinator?
     private var teams: [Team] = []
+    private let cacheService: TeamsCacheServiceRepresentable
     
     /**
       Initializes the TeamsListViewModel.
       - parameter coordinator: The coordinator instance.
       */
-     init(coordinator: TeamsListCoordinator) {
+     init(coordinator: TeamsListCoordinator,
+          cacheService: TeamsCacheServiceRepresentable = TeamsCacheService()) {
        self.coordinator = coordinator
+         self.cacheService = cacheService
      }
     
     func fetchTeams() async throws  -> [TeamViewModel] {
         let request = FetchTeamsListRequest()
-        let response = try await request.execute()
-        self.teams = response.teams
-        return self.teams.map({ TeamViewModel(from: $0) })
+        do {
+            // 1. Fetch remote data
+            let response = try await request.execute()
+            self.teams = response.teams
+            
+            // 2. Offload serialization and writing safely to the standalone service
+            await cacheService.saveTeams(response.teams)
+            
+            return self.teams.map({ TeamViewModel(from: $0) })
+        } catch {
+            // 3. Fallback to the standalone cache entity upon network failure
+            if let cachedTeams = await cacheService.loadTeams() {
+                self.teams = cachedTeams
+                print("## Cache hit! Displaying offline data.")
+                return self.teams.map({ TeamViewModel(from: $0) })
+            }
+            
+            // Neither network nor cache worked; throw error up to UI
+            throw error
+        }
     }
     
     func teamCellTapped(for teamViewModel: TeamViewModel) {

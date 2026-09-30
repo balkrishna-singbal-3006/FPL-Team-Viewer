@@ -49,7 +49,7 @@ private struct RawTeam: Decodable {
     }
 }
 
-struct Team {
+struct Team: Codable {
     let name: String
     let shortName: String
     let players: [Player]
@@ -59,7 +59,7 @@ struct Team {
     }
 }
 
-struct Player: Decodable {
+struct Player: Codable {
     let id: Int
     let teamId: Int
     let firstName: String
@@ -68,7 +68,7 @@ struct Player: Decodable {
     let price: Int
     let position: Position
     
-    enum Position: Int, Decodable {
+    enum Position: Int, Codable {
         case goalkeeper = 1
         case defender = 2
         case midfielder = 3

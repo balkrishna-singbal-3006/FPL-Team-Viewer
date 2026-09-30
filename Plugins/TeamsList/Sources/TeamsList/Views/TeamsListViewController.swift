@@ -20,6 +20,12 @@ class TeamsListViewController: UIViewController {
     private let errorLabel = UILabel()
     private let retryButton = UIButton(type: .system)
     
+    // ADDED: Empty state screen views
+    private let emptyContainerView = UIView()
+    private let emptyImageView = UIImageView()
+    private let emptyTitleLabel = UILabel()
+    private let emptyMessageLabel = UILabel()
+    
     // MARK: - Diffable Data Source
     private enum Section { case main }
     private var dataSource: UITableViewDiffableDataSource<Section, TeamViewModel>!
@@ -32,6 +38,7 @@ class TeamsListViewController: UIViewController {
         setupTableView()
         setupLoadingIndicator()
         setupErrorView() // 2. Set up constraints for the error card layout
+        setupEmptyView()
         configureDataSource()
         fetchTeams(isRefreshing: false)
     }
@@ -42,6 +49,8 @@ class TeamsListViewController: UIViewController {
         }
         
         if !isRefreshing {
+            errorContainerView.isHidden = true
+            emptyContainerView.isHidden = true
             loadingIndicator.startAnimating()
         }
         
@@ -50,7 +59,16 @@ class TeamsListViewController: UIViewController {
                 let viewModels = try await viewModel.fetchTeams()
                 await MainActor.run {
                     self.stopAllLoadingIndicators()
-                    self.tableView.isHidden = false
+                    //self.tableView.isHidden = false
+                    if viewModels.isEmpty {
+                        self.tableView.isHidden = true
+                        self.errorContainerView.isHidden = true
+                        self.emptyContainerView.isHidden = false
+                    } else {
+                        self.tableView.isHidden = false
+                        self.emptyContainerView.isHidden = true
+                        self.errorContainerView.isHidden = true
+                    }
                     self.updateUI(with: viewModels)
                 }
             } catch {
@@ -60,6 +78,7 @@ class TeamsListViewController: UIViewController {
                     let currentlyHasData = self.dataSource.snapshot().numberOfItems > 0
                     if !currentlyHasData {
                         self.tableView.isHidden = true
+                        self.emptyContainerView.isHidden = true
                         self.errorContainerView.isHidden = false
                         self.errorLabel.text = "Failed to load teams.\nPlease check your connection."
                     } else {
@@ -128,6 +147,57 @@ class TeamsListViewController: UIViewController {
             retryButton.topAnchor.constraint(equalTo: errorLabel.bottomAnchor, constant: 16),
             retryButton.centerXAnchor.constraint(equalTo: errorContainerView.centerXAnchor),
             retryButton.bottomAnchor.constraint(equalTo: errorContainerView.bottomAnchor)
+        ])
+    }
+    
+    private func setupEmptyView() {
+        view.addSubview(emptyContainerView)
+        emptyContainerView.translatesAutoresizingMaskIntoConstraints = false
+        emptyContainerView.isHidden = true
+        
+        // System symbol visual anchor decoration
+        emptyImageView.image = UIImage(systemName: "sportscourt")?.withConfiguration(
+            UIImage.SymbolConfiguration(pointSize: 60, weight: .light)
+        )
+        emptyImageView.tintColor = .systemGray3
+        emptyImageView.contentMode = .scaleAspectFit
+        emptyImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        emptyTitleLabel.text = "No Teams Found"
+        emptyTitleLabel.font = .systemFont(ofSize: 20, weight: .bold)
+        emptyTitleLabel.textAlignment = .center
+        emptyTitleLabel.textColor = .label
+        emptyTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        emptyMessageLabel.text = "There are currently no active teams available to view. Pull down to refresh later."
+        emptyMessageLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        emptyMessageLabel.textColor = .secondaryLabel
+        emptyMessageLabel.textAlignment = .center
+        emptyMessageLabel.numberOfLines = 0
+        emptyMessageLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        emptyContainerView.addSubview(emptyImageView)
+        emptyContainerView.addSubview(emptyTitleLabel)
+        emptyContainerView.addSubview(emptyMessageLabel)
+        
+        NSLayoutConstraint.activate([
+            emptyContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyContainerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+            emptyContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
+            
+            emptyImageView.topAnchor.constraint(equalTo: emptyContainerView.topAnchor),
+            emptyImageView.centerXAnchor.constraint(equalTo: emptyContainerView.centerXAnchor),
+            emptyImageView.heightAnchor.constraint(equalToConstant: 70),
+            
+            emptyTitleLabel.topAnchor.constraint(equalTo: emptyImageView.bottomAnchor, constant: 16),
+            emptyTitleLabel.leadingAnchor.constraint(equalTo: emptyContainerView.leadingAnchor),
+            emptyTitleLabel.trailingAnchor.constraint(equalTo: emptyContainerView.trailingAnchor),
+            
+            emptyMessageLabel.topAnchor.constraint(equalTo: emptyTitleLabel.bottomAnchor, constant: 8),
+            emptyMessageLabel.leadingAnchor.constraint(equalTo: emptyContainerView.leadingAnchor),
+            emptyMessageLabel.trailingAnchor.constraint(equalTo: emptyContainerView.trailingAnchor),
+            emptyMessageLabel.bottomAnchor.constraint(equalTo: emptyContainerView.bottomAnchor)
         ])
     }
     
