@@ -6,26 +6,22 @@
 //
 
 protocol TeamsViewModelRepresentable {
-    var coordinator: TeamsListCoordinator? { get set }
+    var coordinator: Coordinator { get }
     
     func fetchTeams() async throws -> [TeamViewModel]
     func teamCellTapped(for teamViewModel: TeamViewModel)
 }
 
 class TeamsListViewModel: TeamsViewModelRepresentable {
-    weak var coordinator: TeamsListCoordinator?
+    let coordinator: Coordinator
     private var teams: [Team] = []
     private let cacheService: TeamsCacheServiceRepresentable
     
-    /**
-      Initializes the TeamsListViewModel.
-      - parameter coordinator: The coordinator instance.
-      */
-     init(coordinator: TeamsListCoordinator,
-          cacheService: TeamsCacheServiceRepresentable = TeamsCacheService()) {
-       self.coordinator = coordinator
-         self.cacheService = cacheService
-     }
+    init(coordinator: Coordinator,
+         cacheService: TeamsCacheServiceRepresentable = TeamsCacheService()) {
+        self.coordinator = coordinator
+        self.cacheService = cacheService
+    }
     
     func fetchTeams() async throws  -> [TeamViewModel] {
         let request = FetchTeamsListRequest()
@@ -35,9 +31,9 @@ class TeamsListViewModel: TeamsViewModelRepresentable {
             self.teams = response.teams
             
             // 2. Offload serialization and writing safely to the standalone service
-            await cacheService.saveTeams(response.teams)
+            self.saveTeamsToCache(response.teams)
             
-            return self.teams.map({ TeamViewModel(from: $0) })
+            return self.teams.map(TeamViewModel.init)
         } catch {
             // 3. Fallback to the standalone cache entity upon network failure
             if let cachedTeams = await cacheService.loadTeams() {
@@ -51,9 +47,17 @@ class TeamsListViewModel: TeamsViewModelRepresentable {
         }
     }
     
+    private func saveTeamsToCache(_ teamsToCache: [Team]) {
+        let service = self.cacheService
+        
+        Task { [teamsToCache, service] in
+            await service.saveTeams(teamsToCache)
+        }
+    }
+
     func teamCellTapped(for teamViewModel: TeamViewModel) {
-        coordinator?.performAction(TeamsListAction.showTeamSquad(teamName: teamViewModel.domainModel.name,
-                                                                 players: teamViewModel.domainModel.players))
+        coordinator.performAction(TeamsListAction.showTeamSquad(teamName: teamViewModel.domainModel.name,
+                                                                players: teamViewModel.domainModel.players))
     }
 }
 

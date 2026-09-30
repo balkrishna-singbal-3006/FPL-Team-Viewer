@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol TeamsCacheServiceRepresentable {
+protocol TeamsCacheServiceRepresentable: Sendable {
     func saveTeams(_ teams: [Team]) async
     func loadTeams() async -> [Team]?
 }
