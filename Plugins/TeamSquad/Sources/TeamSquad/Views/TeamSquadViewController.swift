@@ -12,12 +12,36 @@ class TeamSquadViewController: UIViewController {
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private var dataSource: TeamSquadDataSource!
     
+    private lazy var searchController: UISearchController = {
+        let sc = UISearchController(searchResultsController: nil)
+        sc.obscuresBackgroundDuringPresentation = false
+        sc.searchBar.placeholder = "Search by name"
+        sc.searchBar.autocapitalizationType = .none
+        sc.searchBar.autocorrectionType = .no
+        sc.searchResultsUpdater = self
+        return sc
+    }()
+
+    private var currentSearchText: String = ""
+
+    private var isFiltering: Bool {
+        let text = currentSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        return navigationItem.searchController?.isActive == true && !text.isEmpty
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
         setupTableView()
         configureDataSource()
+        // Attach the search bar to the navigation bar
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+
+        // Optional: nicer UX when scrolling the table
+        tableView.keyboardDismissMode = .onDrag
+        
         applySnapshot()
     }
     
@@ -53,32 +77,47 @@ class TeamSquadViewController: UIViewController {
     }
     
     private func applySnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<PositionSection, PlayerCellViewModel>()
-        guard let viewModel else {
-            return
-        }
-        
-        // Drive layout completely off of ViewModel state outputs
-        let sections = viewModel.sections
-        snapshot.appendSections(sections)
-        
-        for section in sections {
-            if let items = viewModel.itemsPerSection[section] {
-                snapshot.appendItems(items, toSection: section)
+        guard let viewModel else { return }
+
+        // Example shape—replace with your actual accessors/types
+        // let allSections: [TeamSquadSectionViewModel] = viewModel.sections
+        // where TeamSquadSectionViewModel has: `sectionID` and `items: [PlayerItem]`
+
+        let allSections = viewModel.sections // Replace with your actual sections
+
+        let visibleSections = allSections.compactMap { section -> (sectionID: PositionSection, items: [PlayerCellViewModel])? in
+            guard let itemsPerSection = viewModel.itemsPerSection[section] else {
+                return nil
+            }
+            let filteredItems = itemsPerSection.filter(matches(_:))
+            if isFiltering {
+                // Hide sections with no matches
+                return filteredItems.isEmpty ? nil : (section, filteredItems)
+            } else {
+                return (section, itemsPerSection)
             }
         }
-        
+
+        var snapshot = NSDiffableDataSourceSnapshot<PositionSection, PlayerCellViewModel>()
+        visibleSections.forEach { pair in
+            snapshot.appendSections([pair.sectionID])
+            snapshot.appendItems(pair.items, toSection: pair.sectionID)
+        }
         dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    private func matches(_ item: PlayerCellViewModel) -> Bool {
+        let query = currentSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return true }
+
+        let lhs = item.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+        let rhs = query.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+        return lhs.contains(rhs)
     }
 }
 
 // MARK: - UITableViewDelegate
 extension TeamSquadViewController: UITableViewDelegate {
-//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        print("Inside titleForHeaderInSection...")
-//        return viewModel?.sections[section].title
-//    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -96,5 +135,17 @@ class TeamSquadDataSource: UITableViewDiffableDataSource<PositionSection, Player
         let currentSnapshot = snapshot()
         guard section < currentSnapshot.sectionIdentifiers.count else { return nil }
         return currentSnapshot.sectionIdentifiers[section].title
+    }
+}
+
+extension TeamSquadViewController: UISearchResultsUpdating, UISearchBarDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        currentSearchText = searchController.searchBar.text ?? ""
+        applySnapshot()
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        currentSearchText = ""
+        applySnapshot()
     }
 }
