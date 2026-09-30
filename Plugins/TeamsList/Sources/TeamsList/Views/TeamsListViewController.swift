@@ -15,6 +15,11 @@ class TeamsListViewController: UIViewController {
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
     private let refreshControl = UIRefreshControl()
     
+    // 1. Add the container view and subviews for the error state screen
+    private let errorContainerView = UIView()
+    private let errorLabel = UILabel()
+    private let retryButton = UIButton(type: .system)
+    
     // MARK: - Diffable Data Source
     private enum Section { case main }
     private var dataSource: UITableViewDiffableDataSource<Section, TeamViewModel>!
@@ -23,8 +28,10 @@ class TeamsListViewController: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
+        self.view.backgroundColor = .white
         setupTableView()
         setupLoadingIndicator()
+        setupErrorView() // 2. Set up constraints for the error card layout
         configureDataSource()
         fetchTeams(isRefreshing: false)
     }
@@ -39,10 +46,27 @@ class TeamsListViewController: UIViewController {
         }
         
         Task {
-            let viewModels = try await viewModel.fetchTeams()
-            await MainActor.run {
-                self.stopAllLoadingIndicators()
-                self.updateUI(with: viewModels)
+            do {
+                let viewModels = try await viewModel.fetchTeams()
+                await MainActor.run {
+                    self.stopAllLoadingIndicators()
+                    self.tableView.isHidden = false
+                    self.updateUI(with: viewModels)
+                }
+            } catch {
+                await MainActor.run {
+                    self.stopAllLoadingIndicators()
+                    // 4. Show the error layout if there is no pre-existing row data in the table view
+                    let currentlyHasData = self.dataSource.snapshot().numberOfItems > 0
+                    if !currentlyHasData {
+                        self.tableView.isHidden = true
+                        self.errorContainerView.isHidden = false
+                        self.errorLabel.text = "Failed to load teams.\nPlease check your connection."
+                    } else {
+                        // If we already have cached row items via pull-to-refresh, just print or show a brief toast
+                        print("Background refresh error: \(error)")
+                    }
+                }
             }
         }
     }
@@ -69,8 +93,51 @@ class TeamsListViewController: UIViewController {
         ])
     }
     
+    // 5. Construct the full-screen error view constraints & components
+    private func setupErrorView() {
+        view.addSubview(errorContainerView)
+        errorContainerView.translatesAutoresizingMaskIntoConstraints = false
+        errorContainerView.isHidden = true // Default hidden state
+        
+        errorLabel.numberOfLines = 0
+        errorLabel.textAlignment = .center
+        errorLabel.textColor = .secondaryLabel
+        errorLabel.font = .systemFont(ofSize: 16, weight: .regular)
+        errorLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        retryButton.setTitle("Try Again", for: .normal)
+        retryButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        retryButton.addTarget(self, action: #selector(handleRetry), for: .touchUpInside)
+        retryButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        errorContainerView.addSubview(errorLabel)
+        errorContainerView.addSubview(retryButton)
+        
+        NSLayoutConstraint.activate([
+            // Center container view in parent controller bounds
+            errorContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            errorContainerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            errorContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            errorContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            
+            // Stack elements vertically inside container layout bounds
+            errorLabel.topAnchor.constraint(equalTo: errorContainerView.topAnchor),
+            errorLabel.leadingAnchor.constraint(equalTo: errorContainerView.leadingAnchor),
+            errorLabel.trailingAnchor.constraint(equalTo: errorContainerView.trailingAnchor),
+            
+            retryButton.topAnchor.constraint(equalTo: errorLabel.bottomAnchor, constant: 16),
+            retryButton.centerXAnchor.constraint(equalTo: errorContainerView.centerXAnchor),
+            retryButton.bottomAnchor.constraint(equalTo: errorContainerView.bottomAnchor)
+        ])
+    }
+    
     @objc private func handleRefresh() {
         fetchTeams(isRefreshing: true)
+    }
+    
+    // 6. Objective-C execution target connected to button tap sequence
+    @objc private func handleRetry() {
+        fetchTeams(isRefreshing: false)
     }
     
     private func setupLoadingIndicator() {
