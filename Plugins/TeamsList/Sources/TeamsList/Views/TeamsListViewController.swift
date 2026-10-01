@@ -37,7 +37,7 @@ class TeamsListViewController: UIViewController {
         self.view.backgroundColor = .white
         setupTableView()
         setupLoadingIndicator()
-        setupErrorView() // 2. Set up constraints for the error card layout
+        setupErrorView()
         setupEmptyView()
         configureDataSource()
         fetchTeams(isRefreshing: false)
@@ -205,7 +205,6 @@ class TeamsListViewController: UIViewController {
         fetchTeams(isRefreshing: true)
     }
     
-    // 6. Objective-C execution target connected to button tap sequence
     @objc private func handleRetry() {
         fetchTeams(isRefreshing: false)
     }
@@ -213,7 +212,7 @@ class TeamsListViewController: UIViewController {
     private func setupLoadingIndicator() {
         view.addSubview(loadingIndicator)
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
-        loadingIndicator.hidesWhenStopped = true // Automatically hides when stopped
+        loadingIndicator.hidesWhenStopped = true 
         
         NSLayoutConstraint.activate([
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),

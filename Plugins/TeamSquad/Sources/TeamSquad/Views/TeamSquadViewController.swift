@@ -99,12 +99,7 @@ class TeamSquadViewController: UIViewController {
     private func applySnapshot() {
         guard let viewModel else { return }
 
-        // Example shape—replace with your actual accessors/types
-        // let allSections: [TeamSquadSectionViewModel] = viewModel.sections
-        // where TeamSquadSectionViewModel has: `sectionID` and `items: [PlayerItem]`
-
-        let allSections = viewModel.sections // Replace with your actual sections
-
+        let allSections = viewModel.sections
         let visibleSections = allSections.compactMap { section -> (sectionID: PositionSection, items: [PlayerCellViewModel])? in
             guard let itemsPerSection = viewModel.itemsPerSection[section] else {
                 return nil
@@ -140,11 +135,6 @@ class TeamSquadViewController: UIViewController {
 extension TeamSquadViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        guard let cellViewModel = dataSource.itemIdentifier(for: indexPath) else { return }
-        
-        // Pass the player payload over to your flow coordinator or details layer
-        print("MVVM Routing for: \(cellViewModel.name)")
     }
 }
 
