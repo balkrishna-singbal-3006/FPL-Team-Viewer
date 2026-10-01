@@ -17,6 +17,8 @@ public extension Coordinator {
     public func popBack() {
         self.navigationController.popViewController(animated: true)
     }
+    
+    public func performAction(_ action: Actionable) { }
 }
 
 public protocol Actionable { }

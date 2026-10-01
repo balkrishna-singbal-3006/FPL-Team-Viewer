@@ -1,11 +1,12 @@
 // The Swift Programming Language
 // https://docs.swift.org/swift-book
 
+import CoreComponents
 import PluginAPIs
 import UIKit
 
 public class TeamSquadPluginAPI: TeamSquadAPI {
-    private var coordinator: TeamSquadCoordinator?
+    private var coordinator: Coordinator?
     
     public init() { }
     

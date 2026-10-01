@@ -4,11 +4,11 @@
 //
 //  Created by Balkrishna Nitin Singbal on 9/29/26.
 //
-
+import CoreComponents
 import PluginAPIs
 
 protocol TeamSquadViewModelRepresentable {
-    var coordinator: TeamSquadCoordinator? { get set }
+    var coordinator: Coordinator { get }
     var sections: [PositionSection] { get }
     var itemsPerSection: [PositionSection: [PlayerCellViewModel]] { get }
     func updateSortType(to newSort: SortCriteria)
@@ -20,7 +20,7 @@ enum SortCriteria {
 }
 
 class TeamSquadViewModel: TeamSquadViewModelRepresentable {
-    weak var coordinator: TeamSquadCoordinator?
+    let coordinator: Coordinator
     private let squadPlayers: [SquadPlayer]
     private(set) var sections: [PositionSection] = []
     private(set) var itemsPerSection: [PositionSection: [PlayerCellViewModel]] = [:]
@@ -38,11 +38,13 @@ class TeamSquadViewModel: TeamSquadViewModelRepresentable {
      }
     
     func updateSortType(to newSort: SortCriteria) {
+        guard self.currentSort != newSort else { return }
+        
         self.currentSort = newSort
-        self.loadPlayers() // Re-process data with new sort parameters
+        self.sortPlayers()
     }
     
-    func loadPlayers() {
+    private func loadPlayers() {
         let groupedDictionary = Dictionary(grouping: squadPlayers, by: { $0.position })
         let sortedPositions = groupedDictionary.keys.sorted()
         
@@ -54,33 +56,40 @@ class TeamSquadViewModel: TeamSquadViewModelRepresentable {
             updatedSections.append(section)
             
             if let playersInPosition = groupedDictionary[position] {
-                let sortedPlayers = playersInPosition.sorted { leftPlayer, rightPlayer in
-                    switch currentSort {
-                    case .totalPoints:
-                        if leftPlayer.totalPoints == rightPlayer.totalPoints {
-                            return leftPlayer.price > rightPlayer.price // Tie-breaker: price
-                        }
-                        return leftPlayer.totalPoints > rightPlayer.totalPoints
-                    case .price:
-                        if leftPlayer.price == rightPlayer.price {
-                            return leftPlayer.totalPoints > rightPlayer.totalPoints // Tie-breaker: points
-                        }
-                        return leftPlayer.price > rightPlayer.price
-                    }
-                }
-                
-                // Map Domain arrays directly into UI Cell ViewModels
-                updatedItems[section] = sortedPlayers.map { PlayerCellViewModel(from: $0) }
+                // Initial generation pass maps raw items flat into View Models
+                updatedItems[section] = playersInPosition.map { PlayerCellViewModel(from: $0) }
             }
         }
         
-        // Update state and notify view layer
         self.sections = updatedSections
         self.itemsPerSection = updatedItems
+        
+        // Apply sorting criteria configuration baseline
+        self.sortPlayers()
     }
+    
+    private func sortPlayers() {
+        for (section, viewModels) in itemsPerSection {
+            itemsPerSection[section] = viewModels.sorted(by: { left, right in
+                switch currentSort {
+                case .totalPoints:
+                    if left.totalPoints == right.totalPoints {
+                        return left.price > right.price
+                    }
+                    return left.totalPoints > right.totalPoints
+                case .price:
+                    if left.price == right.price {
+                        return left.totalPoints > right.totalPoints
+                    }
+                    return left.price > right.price
+                }
+            })
+        }
+    }
+
 }
 
-extension SquadPlayer.Position {
+private extension SquadPlayer.Position {
     var title: String {
         switch self {
         case .goalkeeper:
@@ -95,14 +104,18 @@ extension SquadPlayer.Position {
     }
 }
 
-// View Model for the row item (Keeps a reference to the domain payload)
+// View Model for the row item
 struct PlayerCellViewModel: Hashable {
     let name: String
     let details: String
+    let totalPoints: Int
+    let price: Int
     
     init(from domainModel: SquadPlayer) {
         self.name = "\(domainModel.firstName) \(domainModel.lastName)"
         self.details = "£\(domainModel.price)m  •  \(domainModel.totalPoints) pts"
+        self.totalPoints = domainModel.totalPoints
+        self.price = domainModel.price
     }
     
     func hash(into hasher: inout Hasher) {
@@ -117,5 +130,5 @@ struct PlayerCellViewModel: Hashable {
 
 // Section structure mapping a Position Title to its array of View Models
 struct PositionSection: Hashable {
-    let title: String // e.g., "Defenders"
+    let title: String
 }
