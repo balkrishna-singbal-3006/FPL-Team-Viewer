@@ -51,6 +51,11 @@ The layout architecture drives cell updates using UITableViewDiffableDataSource:
 * Eliminates error-prone manual reloadData() indexing.
 * Automatically handles dynamic transitions and animations when list elements shift order or update content states.
 
+**How to build and run the application?**
+
+1. Download the project.
+2. Open it in Xcode.
+3. Point the target to an iOS simulator or a real device & run the app.
 
 **Improvements:**
 1. Have a Swinject like container for Dependency Injection(DI) of plugins.
