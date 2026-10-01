@@ -26,7 +26,7 @@ The application leverages a Multi-Module Platform Architecture. By splitting bus
 ![App Dashboard Screen](Platform_Architecture.png)
 
 
-**Presentation Layer (MVVM-C)**
+**Plugin Architecture (MVVM-C)**
 
 * Model-View-ViewModel (MVVM): Offloads complex data transformations, state manipulation, and list sorting logic directly out of view components.
 * Coordinator Pattern: Completely decouples application routing and screen presentation rules from the UIKit lifecycle.
