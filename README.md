@@ -22,6 +22,10 @@ The codebase strictly adheres to Clean Architecture and SOLID design principles,
 
 The application leverages a Multi-Module Platform Architecture. By splitting business responsibilities into isolated, independent framework layers, compilation speeds are optimized, and feature boundaries remain completely decoupled. I have used Swift Package Manager (SPM) for creating local package (modules) and for their integration.
 
+
+![App Dashboard Screen](Platform_Architecture.png)
+
+
 **Presentation Layer (MVVM-C)**
 
 * Model-View-ViewModel (MVVM): Offloads complex data transformations, state manipulation, and list sorting logic directly out of view components.
