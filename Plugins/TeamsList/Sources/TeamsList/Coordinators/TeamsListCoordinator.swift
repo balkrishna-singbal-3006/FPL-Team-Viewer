@@ -4,29 +4,10 @@
 //
 //  Created by Balkrishna Nitin Singbal on 9/29/26.
 //
+
+import CoreComponents
 import PluginAPIs
 import UIKit
-
-// ---------- To Move ------------//
-protocol Coordinator {
-    var navigationController: UINavigationController { get }
-    func start()
-    func popBack()
-    func performAction(_ action: Actionable)
-}
-
-extension Coordinator {
-    /**
-     Pops the view controller from the navigation stack.
-     */
-    func popBack() {
-        self.navigationController.popViewController(animated: true)
-    }
-}
-
-protocol Actionable { }
-
-// ---------- To Move ------------//
 
 enum TeamsListAction: Actionable {
     case showTeamSquad(teamName: String,

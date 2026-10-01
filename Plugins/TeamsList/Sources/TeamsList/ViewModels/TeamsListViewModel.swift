@@ -4,6 +4,7 @@
 //
 //  Created by Balkrishna Nitin Singbal on 9/29/26.
 //
+import CoreComponents
 
 protocol TeamsViewModelRepresentable {
     var coordinator: Coordinator { get }

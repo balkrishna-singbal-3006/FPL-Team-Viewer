@@ -232,6 +232,7 @@
 				0626254B306B89A5006520F9 /* XCLocalSwiftPackageReference "Plugins/TeamsList" */,
 				0626254C306B8A07006520F9 /* XCLocalSwiftPackageReference "Plugins/TeamSquad" */,
 				0626254D306B8A3B006520F9 /* XCLocalSwiftPackageReference "Plugins/PluginAPIs" */,
+				0681BDE5306E2B1B0026677E /* XCLocalSwiftPackageReference "Plugins/CoreComponents" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 06262518306B88C0006520F9 /* Products */;
@@ -619,6 +620,10 @@
 		0626254D306B8A3B006520F9 /* XCLocalSwiftPackageReference "Plugins/PluginAPIs" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Plugins/PluginAPIs;
+		};
+		0681BDE5306E2B1B0026677E /* XCLocalSwiftPackageReference "Plugins/CoreComponents" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Plugins/CoreComponents;
 		};
 /* End XCLocalSwiftPackageReference section */
 
