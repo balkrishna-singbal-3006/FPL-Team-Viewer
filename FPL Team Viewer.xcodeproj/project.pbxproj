@@ -10,6 +10,7 @@
 		06262550306B8A4D006520F9 /* TeamsList in Frameworks */ = {isa = PBXBuildFile; productRef = 0626254F306B8A4D006520F9 /* TeamsList */; };
 		06262552306B8A4D006520F9 /* TeamSquad in Frameworks */ = {isa = PBXBuildFile; productRef = 06262551306B8A4D006520F9 /* TeamSquad */; };
 		06262554306B8A4D006520F9 /* PluginAPIs in Frameworks */ = {isa = PBXBuildFile; productRef = 06262553306B8A4D006520F9 /* PluginAPIs */; };
+		069108F8306E4607001412F7 /* Platform_Architecture.png in Resources */ = {isa = PBXBuildFile; fileRef = 069108F7306E4607001412F7 /* Platform_Architecture.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +34,7 @@
 		06262517306B88C0006520F9 /* FPL Team Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FPL Team Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0626252D306B88C3006520F9 /* FPL Team ViewerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "FPL Team ViewerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		06262537306B88C3006520F9 /* FPL Team ViewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "FPL Team ViewerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		069108F7306E4607001412F7 /* Platform_Architecture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Platform_Architecture.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -97,6 +99,7 @@
 		0626250E306B88C0006520F9 = {
 			isa = PBXGroup;
 			children = (
+				069108F7306E4607001412F7 /* Platform_Architecture.png */,
 				06262519306B88C0006520F9 /* FPL Team Viewer */,
 				06262530306B88C3006520F9 /* FPL Team ViewerTests */,
 				0626253A306B88C3006520F9 /* FPL Team ViewerUITests */,
@@ -251,6 +254,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				069108F8306E4607001412F7 /* Platform_Architecture.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
