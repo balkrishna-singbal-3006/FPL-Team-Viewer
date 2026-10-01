@@ -46,3 +46,10 @@ To maintain high offline availability, a dedicated, asynchronous TeamsCacheServi
 The layout architecture drives cell updates using UITableViewDiffableDataSource:
 * Eliminates error-prone manual reloadData() indexing.
 * Automatically handles dynamic transitions and animations when list elements shift order or update content states.
+
+
+**Improvements:**
+1. Have a Swinject like container for Dependency Injection(DI) of plugins.
+2. Create a separate Networking Library.
+3. Add support for localization & accessibility.
+4. Write more unit test cases.
